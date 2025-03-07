@@ -1,0 +1,4 @@
+selenium
+requests
+pickle-mixin
+
