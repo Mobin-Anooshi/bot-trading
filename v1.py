@@ -1,0 +1,249 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from time import sleep
+from selenium.webdriver.chrome.options import Options
+from datetime import datetime, timedelta
+import pickle
+import requests
+
+
+
+chrome_options = Options()
+chrome_options.add_argument("--headless")  # فعال‌سازی حالت headless
+chrome_options.add_argument("--disable-gpu")  # غیرفعال کردن GPU
+chrome_options.add_argument("--window-size=1920,1080")  # تنظیم اندازه صفحه‌نمایش مجازی
+driver = webdriver.Chrome(options=chrome_options)
+
+
+
+COOKIE_FILE = "tradingview_cookies.pkl"
+
+
+def save_cookies():
+    """ذخیره کوکی‌های لاگین در فایل"""
+    with open(COOKIE_FILE, "wb") as file:
+        pickle.dump(driver.get_cookies(), file)
+    print("Save cookies")
+
+def load_cookies():
+    """بارگذاری کوکی‌های ذخیره‌شده"""
+    try:
+        with open(COOKIE_FILE, "rb") as file:
+            cookies = pickle.load(file)
+            for cookie in cookies:
+                driver.add_cookie(cookie)
+        print("Set cookies")
+    except FileNotFoundError:
+        print("Cookies Not found")
+
+try:
+
+
+    driver.get("https://www.tradingview.com/")
+    
+    load_cookies()
+    driver.refresh() 
+    try:
+        www = driver.find_element(By.CLASS_NAME,'tv-header__user-menu-button')
+        www.click()
+        sleep(5)
+        login_button = driver.find_element(By.CSS_SELECTOR, "button[data-name='header-user-menu-sign-in']")
+        login_button.click()
+        
+
+        sleep(5)
+
+
+        iframe = driver.find_element(By.NAME, "Email")
+        iframe.click()
+
+        # login
+        username = driver.find_element(By.NAME, "id_username")
+        password = driver.find_element(By.NAME, "id_password")
+        username.send_keys("me.anooshi@gmail.com")  # username
+        password.send_keys("mobin@nooshi2003")  # password
+        password.send_keys(Keys.RETURN)
+
+        driver.switch_to.default_content()
+
+
+        ###################################### Delete #############################
+        print("Login")
+        sleep(15)
+        save_cookies()
+        
+    except :
+        print('Login')    
+        sleep(20)
+    
+    
+    #  انتخاب سیمبل طلا 
+    print('Enter XAUUSD in Dashbord')
+    gold_select = driver.find_element(By.CSS_SELECTOR,f'div[data-symbol-short="XAUUSD"]')
+    gold_select.click()
+    sleep(15)
+    
+    #  وارد شذن به طلا 
+    print('Click XAUUSD Chart')
+    eantr_symbol = driver.find_element(By.CLASS_NAME,'content-D4RPB3ZC')
+    eantr_symbol.click()
+    
+    # سوییچ کردن تب 
+    print('switching the tab')
+    driver.switch_to.window(driver.window_handles[1]) 
+
+    #Defualt price
+    last_price = {
+        'Open':0,
+        'High':0,
+        'Low':0,
+        'Close':0,
+        'Position': 'G'
+        }
+    
+    
+    # Telgram channel
+    
+    BOT_TOKEN = "7688739598:AAHhxrbE39yYnfeNoPrKb0gjykiDUjfjZ6Q"  # توکن جدید ربات تلگرام را اینجا وارد کنید
+    CHAT_ID = "-1002323662587"  # شناسه چت تلگرام را وارد کنید
+    TELEGRAM_API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    
+    def send_to_telegram(message):
+        
+        payload = {
+        "chat_id": CHAT_ID,
+        "text": message,
+        "parse_mode": "HTML",
+        }
+        
+        try:
+            response = requests.post(TELEGRAM_API_URL, data=payload)
+            if response.status_code == 200:
+                print('Sent message to Telegram')
+            else:
+                print("Faild to send Telegram", response.text)
+        except Exception as e:
+            print("HTTP Error:", e)
+    
+    
+    send_to_telegram('Bot started successfully')
+    #get price in chart 
+    def get_price():
+
+        selecte_name1 = driver.find_element(By.XPATH, '/html/body/div[2]/div/div[5]/div[1]/div[1]/div/div[2]/div[1]/div[2]/div/div[1]/div[1]/div[1]/div[2]/div/div[2]/div[2]')
+        selecte_name2 = driver.find_element(By.XPATH, '/html/body/div[2]/div/div[5]/div[1]/div[1]/div/div[2]/div[1]/div[2]/div/div[1]/div[1]/div[1]/div[2]/div/div[3]/div[2]')
+        selecte_name3 = driver.find_element(By.XPATH, '/html/body/div[2]/div/div[5]/div[1]/div[1]/div/div[2]/div[1]/div[2]/div/div[1]/div[1]/div[1]/div[2]/div/div[4]/div[2]')
+        selecte_name4 = driver.find_element(By.XPATH, '/html/body/div[2]/div/div[5]/div[1]/div[1]/div/div[2]/div[1]/div[2]/div/div[1]/div[1]/div[1]/div[2]/div/div[5]/div[2]')
+        
+        
+        open_price = float(selecte_name1.text.replace(',', ''))
+        high_price = float(selecte_name2.text.replace(',', ''))
+        low_price = float(selecte_name3.text.replace(',', ''))
+        close_price = float(selecte_name4.text.replace(',', ''))
+        
+        
+        position = 'R' if open_price - close_price >= 0 else 'G'
+        
+        candle = {
+            'Open': open_price,
+            'High': high_price,
+            'Low': low_price,
+            'Close': close_price,
+            'Position': position
+        }
+        if candle == last_price :
+            print('Two candles being equal *************************')
+            driver.refresh() 
+            # Telegram
+        print(candle)
+        return candle 
+        
+        # save last candel info 
+    def save_last_candel():
+        try:
+            global last_price
+            new_price = get_price()
+            
+            # signal
+            if last_price:
+                if last_price['Position'] == 'R' and new_price['Position'] == 'G' and last_price['Low'] > new_price['Low']:
+                    send_to_telegram('Buy Now (45 method)')# Telgram 
+            
+            last_price = new_price
+        except :
+            print('Faild to save last_candel ')
+        # 276
+
+    # save_last_candel()
+    def generate_45_minute_times(start_hour=2, start_minute=15, num_times=31):
+        start_time = datetime(datetime.now().year, datetime.now().month, datetime.now().day, start_hour, start_minute)
+        return [start_time + timedelta(minutes=45 * i) for i in range(num_times)]
+
+
+    #set 45 timers
+    def time_to_next_45_minutes():
+        now = datetime.now()
+        times = generate_45_minute_times()
+        for time in times:
+            if now < time:
+                remaining_time = time - now
+                return remaining_time.seconds // 60, remaining_time.seconds % 60
+        print('Can`t give the time')
+        return None, None
+    
+    
+    def should_run():
+        now = datetime.now()
+        current_hour = now.hour
+        current_minute = now.minute
+
+        # اگر بین ساعت ۱:۳۰ تا ۲:۳۰ بامداد است، برنامه متوقف شود
+        if current_hour == 0 and current_minute >= 45:
+            return False
+        if current_hour == 2 and current_minute < 15:
+            return False
+        
+        return True
+    
+    
+    #loop
+    while True :
+        
+        if should_run():
+            
+            mint,secn = time_to_next_45_minutes()
+            print(mint,secn)
+            
+            if mint ==0 and secn <=3:
+                print(mint,secn)
+                save_last_candel()
+                sleep(5)
+                
+            elif mint >= 20 and secn >3 :
+                print('sleep 20m')
+                sleep(1200)
+                mint,secn = time_to_next_45_minutes()
+                
+            elif mint >= 10 and secn > 3:
+                print('sleep 10m')
+                sleep(600)
+                mint,secn = time_to_next_45_minutes()
+                
+            elif mint >= 1 and secn != 0  :
+                print('sleep 60s')
+                sleep(60)
+                mint,secn = time_to_next_45_minutes()
+                
+            else:
+                sleep(2)
+                print(mint,secn)
+                
+        else :
+            print('Sleeping')
+            sleep(1800)    
+        
+except :
+    print("Die :(")
+    
+    
