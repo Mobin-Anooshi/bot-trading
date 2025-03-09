@@ -6,6 +6,8 @@ from selenium.webdriver.chrome.options import Options
 from datetime import datetime, timedelta
 import pickle
 import requests
+import csv
+import time
 
 
 
@@ -103,6 +105,44 @@ try:
         }
     
     
+    # Save CSV
+    def get_filename():
+        today_date = datetime.now().strftime("%Y-%m-%d")
+        return f"candles_{today_date}.csv"    
+    
+    def round_to_nearest_5_minutes(dt):
+        rounded_minute = (dt.minute // 5) * 5
+        if dt.minute % 5 >= 3:
+            rounded_minute += 5
+
+        if rounded_minute == 60:
+            dt += timedelta(hours=1)
+            rounded_minute = 0
+
+        return dt.replace(minute=rounded_minute, second=0, microsecond=0)
+
+    def create_csv_file():
+        filename = get_filename()
+        with open(filename, mode="w", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow(["Timestamp", "Open", "High", "Low", "Close", "Position"])
+    
+    def append_candle_to_csv(candle):
+        filename = get_filename()
+        with open(filename, mode="a", newline="") as file:
+            writer = csv.writer(file)
+            current_time = datetime.now()
+            rounded_time = round_to_nearest_5_minutes(current_time)
+            timestamp = rounded_time.strftime("%Y-%m-%d %H:%M:%S")
+            writer.writerow([timestamp, candle["Open"], candle["High"], candle["Low"], candle["Close"], candle["Position"]])
+    
+    
+    create_csv_file()
+    
+    
+    
+    
+    
     # Telgram channel
     
     BOT_TOKEN = "7688739598:AAHhxrbE39yYnfeNoPrKb0gjykiDUjfjZ6Q"  # توکن جدید ربات تلگرام را اینجا وارد کنید
@@ -155,7 +195,8 @@ try:
         if candle == last_price :
             print('Two candles being equal *************************')
             driver.refresh() 
-            # Telegram
+        
+        append_candle_to_csv(candle)
         print(candle)
         return candle 
         
