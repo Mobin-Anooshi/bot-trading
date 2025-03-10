@@ -9,12 +9,14 @@ import requests
 import csv
 import time
 
-
+def log_message(message):
+    with open("log.txt", "a", encoding="utf-8") as log_file:
+        log_file.write(f"{datetime.now()} - {message}\n")
 
 chrome_options = Options()
-chrome_options.add_argument("--headless")  # فعال‌سازی حالت headless
-chrome_options.add_argument("--disable-gpu")  # غیرفعال کردن GPU
-chrome_options.add_argument("--window-size=1920,1080")  # تنظیم اندازه صفحه‌نمایش مجازی
+chrome_options.add_argument("--headless")  #  headless
+chrome_options.add_argument("--disable-gpu")  # GPU
+chrome_options.add_argument("--window-size=1920,1080")
 driver = webdriver.Chrome(options=chrome_options)
 
 
@@ -26,7 +28,7 @@ def save_cookies():
     """ذخیره کوکی‌های لاگین در فایل"""
     with open(COOKIE_FILE, "wb") as file:
         pickle.dump(driver.get_cookies(), file)
-    print("Save cookies")
+    log_message("Save cookies")
 
 def load_cookies():
     """بارگذاری کوکی‌های ذخیره‌شده"""
@@ -35,9 +37,9 @@ def load_cookies():
             cookies = pickle.load(file)
             for cookie in cookies:
                 driver.add_cookie(cookie)
-        print("Set cookies")
+        log_message("Set cookies")
     except FileNotFoundError:
-        print("Cookies Not found")
+        log_message("Cookies Not found")
 
 try:
 
@@ -71,28 +73,28 @@ try:
 
 
         ###################################### Delete #############################
-        print("Login")
+        log_message("Login")
         sleep(15)
         save_cookies()
         
     except :
-        print('Login')    
+        log_message('Login')
         sleep(20)
     
     
     #  انتخاب سیمبل طلا 
-    print('Enter XAUUSD in Dashbord')
+    log_message('Enter XAUUSD in Dashbord')
     gold_select = driver.find_element(By.CSS_SELECTOR,f'div[data-symbol-short="XAUUSD"]')
     gold_select.click()
     sleep(15)
     
     #  وارد شذن به طلا 
-    print('Click XAUUSD Chart')
+    log_message('Click XAUUSD Chart')
     eantr_symbol = driver.find_element(By.CLASS_NAME,'content-D4RPB3ZC')
     eantr_symbol.click()
     
     # سوییچ کردن تب 
-    print('switching the tab')
+    log_message('switching the tab')
     driver.switch_to.window(driver.window_handles[1]) 
 
     #Defualt price
@@ -160,11 +162,11 @@ try:
         try:
             response = requests.post(TELEGRAM_API_URL, data=payload)
             if response.status_code == 200:
-                print('Sent message to Telegram')
+                log_message('Sent message to Telegram')
             else:
-                print("Faild to send Telegram", response.text)
+                log_message("Faild to send Telegram", response.text)
         except Exception as e:
-            print("HTTP Error:", e)
+            log_message("HTTP Error:", e)
     
     
     send_to_telegram('Bot started successfully')
@@ -193,11 +195,11 @@ try:
             'Position': position
         }
         if candle == last_price :
-            print('Two candles being equal *************************')
+            log_message('Two candles being equal *************************')
             driver.refresh() 
         
         append_candle_to_csv(candle)
-        print(candle)
+        log_message(candle)
         return candle 
         
         # save last candel info 
@@ -213,7 +215,7 @@ try:
             
             last_price = new_price
         except :
-            print('Faild to save last_candel ')
+            log_message('Faild to save last_candel ')
         # 276
 
     # save_last_candel()
@@ -230,7 +232,7 @@ try:
             if now < time:
                 remaining_time = time - now
                 return remaining_time.seconds // 60, remaining_time.seconds % 60
-        print('Can`t give the time')
+        log_message('Can`t give the time')
         return None, None
     
     
@@ -254,37 +256,37 @@ try:
         if should_run():
             
             mint,secn = time_to_next_45_minutes()
-            print(mint,secn)
+            log_message(mint,secn)
             
             if mint ==0 and secn <=3:
-                print(mint,secn)
+                log_message(mint,secn)
                 save_last_candel()
                 sleep(5)
                 
             elif mint >= 20 and secn >3 :
-                print('sleep 20m')
+                log_message('sleep 20m')
                 sleep(1200)
                 mint,secn = time_to_next_45_minutes()
                 
             elif mint >= 10 and secn > 3:
-                print('sleep 10m')
+                log_message('sleep 10m')
                 sleep(600)
                 mint,secn = time_to_next_45_minutes()
                 
             elif mint >= 1 and secn != 0  :
-                print('sleep 60s')
+                log_message('sleep 60s')
                 sleep(60)
                 mint,secn = time_to_next_45_minutes()
                 
             else:
                 sleep(2)
-                print(mint,secn)
+                log_message(mint,secn)
                 
         else :
-            print('Sleeping')
+            log_message('Sleeping')
             sleep(1800)    
         
 except :
-    print("Die :(")
+    log_message("Die :(")
     
     
