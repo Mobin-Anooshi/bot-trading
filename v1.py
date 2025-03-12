@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 import pickle
 import requests
 import csv
-import time
+
 
 def log_message(message):
     with open("log.txt", "a", encoding="utf-8") as log_file:
@@ -95,7 +95,7 @@ try:
     
     # سوییچ کردن تب 
     log_message('switching the tab')
-    driver.switch_to.window(driver.window_handles[1]) 
+    driver.switch_to.window(driver.window_handles[1])
 
     #Defualt price
     last_price = {
@@ -121,7 +121,11 @@ try:
             dt += timedelta(hours=1)
             rounded_minute = 0
 
-        return dt.replace(minute=rounded_minute, second=0, microsecond=0)
+        rounded_time = dt.replace(minute=rounded_minute, second=0, microsecond=0)
+
+        adjusted_time = rounded_time - timedelta(minutes=45)
+
+        return adjusted_time
 
     def create_csv_file():
         filename = get_filename()
@@ -137,10 +141,10 @@ try:
             rounded_time = round_to_nearest_5_minutes(current_time)
             timestamp = rounded_time.strftime("%Y-%m-%d %H:%M:%S")
             writer.writerow([timestamp, candle["Open"], candle["High"], candle["Low"], candle["Close"], candle["Position"]])
-    
-    
+
+
     create_csv_file()
-    
+
     
     
     
@@ -166,23 +170,24 @@ try:
             else:
                 log_message("Faild to send Telegram", response.text)
         except Exception as e:
-            log_message("HTTP Error:", e)
+            log_message(("HTTP Error:", e))
     
     
     send_to_telegram('Bot started successfully')
-    #get price in chart 
+
+    #get price in chart
     def get_price():
 
-        selecte_name1 = driver.find_element(By.XPATH, '/html/body/div[2]/div/div[5]/div[1]/div[1]/div/div[2]/div[1]/div[2]/div/div[1]/div[1]/div[1]/div[2]/div/div[2]/div[2]')
-        selecte_name2 = driver.find_element(By.XPATH, '/html/body/div[2]/div/div[5]/div[1]/div[1]/div/div[2]/div[1]/div[2]/div/div[1]/div[1]/div[1]/div[2]/div/div[3]/div[2]')
-        selecte_name3 = driver.find_element(By.XPATH, '/html/body/div[2]/div/div[5]/div[1]/div[1]/div/div[2]/div[1]/div[2]/div/div[1]/div[1]/div[1]/div[2]/div/div[4]/div[2]')
-        selecte_name4 = driver.find_element(By.XPATH, '/html/body/div[2]/div/div[5]/div[1]/div[1]/div/div[2]/div[1]/div[2]/div/div[1]/div[1]/div[1]/div[2]/div/div[5]/div[2]')
+        select_name1 = driver.find_element(By.XPATH, '/html/body/div[2]/div/div[5]/div[1]/div[1]/div/div[2]/div[1]/div[2]/div/div[1]/div[1]/div[1]/div[2]/div/div[2]/div[2]')
+        select_name2 = driver.find_element(By.XPATH, '/html/body/div[2]/div/div[5]/div[1]/div[1]/div/div[2]/div[1]/div[2]/div/div[1]/div[1]/div[1]/div[2]/div/div[3]/div[2]')
+        select_name3 = driver.find_element(By.XPATH, '/html/body/div[2]/div/div[5]/div[1]/div[1]/div/div[2]/div[1]/div[2]/div/div[1]/div[1]/div[1]/div[2]/div/div[4]/div[2]')
+        select_name4 = driver.find_element(By.XPATH, '/html/body/div[2]/div/div[5]/div[1]/div[1]/div/div[2]/div[1]/div[2]/div/div[1]/div[1]/div[1]/div[2]/div/div[5]/div[2]')
         
         
-        open_price = float(selecte_name1.text.replace(',', ''))
-        high_price = float(selecte_name2.text.replace(',', ''))
-        low_price = float(selecte_name3.text.replace(',', ''))
-        close_price = float(selecte_name4.text.replace(',', ''))
+        open_price = float(select_name1.text.replace(',', ''))
+        high_price = float(select_name2.text.replace(',', ''))
+        low_price = float(select_name3.text.replace(',', ''))
+        close_price = float(select_name4.text.replace(',', ''))
         
         
         position = 'R' if open_price - close_price >= 0 else 'G'
@@ -196,30 +201,31 @@ try:
         }
         if candle == last_price :
             log_message('Two candles being equal *************************')
-            driver.refresh() 
+            driver.refresh()
+
         
-        append_candle_to_csv(candle)
-        log_message(candle)
+
         return candle 
         
-        # save last candel info 
-    def save_last_candel():
+    # save last candle info
+    def save_last_candle():
         try:
             global last_price
             new_price = get_price()
-            
+            append_candle_to_csv(new_price)
+            log_message(new_price)
             # signal
             if last_price:
                 if last_price['Position'] == 'R' and new_price['Position'] == 'G' and last_price['Low'] > new_price['Low']:
-                    send_to_telegram('Buy Now (45 method)')# Telgram 
+                    send_to_telegram('Buy Now (45 method)')# Telegram
             
             last_price = new_price
         except :
-            log_message('Faild to save last_candel ')
+            log_message('Failed to save last_candle ')
         # 276
 
-    # save_last_candel()
-    def generate_45_minute_times(start_hour=2, start_minute=15, num_times=31):
+    # save_last_candle()
+    def generate_45_minute_times(start_hour=1, start_minute=15, num_times=31):
         start_time = datetime(datetime.now().year, datetime.now().month, datetime.now().day, start_hour, start_minute)
         return [start_time + timedelta(minutes=45 * i) for i in range(num_times)]
 
@@ -249,18 +255,18 @@ try:
         
         return True
     
-    
+
     #loop
     while True :
-        
+
         if should_run():
-            
+
             mint,secn = time_to_next_45_minutes()
-            log_message(mint,secn)
+            log_message((mint,secn))
             
             if mint ==0 and secn <=3:
-                log_message(mint,secn)
-                save_last_candel()
+                log_message((mint,secn))
+                save_last_candle()
                 sleep(5)
                 
             elif mint >= 20 and secn >3 :
@@ -280,7 +286,7 @@ try:
                 
             else:
                 sleep(2)
-                log_message(mint,secn)
+                log_message((mint,secn))
                 
         else :
             log_message('Sleeping')
