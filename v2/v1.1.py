@@ -272,6 +272,8 @@ try:
         text_numbers = driver.find_element(By.XPATH,
                                    '/html/body/div[6]/div[2]/span/div[1]/div/div/div[1]/div/p/span[2]').text
         numbers = re.findall(r'\d+',text_numbers)
+        if len(numbers) ==1:
+            numbers.insert(0,'0')
         hour ,minutes = map(int,numbers)
         open_element.click()
         return hour , minutes
