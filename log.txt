@@ -1,0 +1,21 @@
+2025-03-12 23:56:26.289919 - Set cookies
+2025-03-12 23:56:30.855070 - Login
+2025-03-12 23:56:50.875432 - Enter Gold Symbol
+2025-03-12 23:57:05.979718 - Click Gold Chart
+2025-03-12 23:57:06.067698 - switching the tab
+2025-03-12 23:57:06.867748 - ('HTTP Error:', ConnectionError(MaxRetryError("HTTPSConnectionPool(host='api.telegram.org', port=443): Max retries exceeded with url: /bot7688739598:AAHhxrbE39yYnfeNoPrKb0gjykiDUjfjZ6Q/sendMessage (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7eb6b4a4d420>: Failed to establish a new connection: [Errno 101] Network is unreachable'))")))
+2025-03-12 23:58:44.153545 - Die :(
+2025-03-13 00:17:40.579361 - Set cookies
+2025-03-13 00:17:46.006320 - Login
+2025-03-13 00:18:06.026449 - Enter Gold Symbol
+2025-03-13 00:18:21.077453 - Click Gold Chart
+2025-03-13 00:18:21.129746 - switching the tab
+2025-03-13 00:18:27.524439 - ('HTTP Error:', ConnectionError(MaxRetryError("HTTPSConnectionPool(host='api.telegram.org', port=443): Max retries exceeded with url: /bot7688739598:AAHhxrbE39yYnfeNoPrKb0gjykiDUjfjZ6Q/sendMessage (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x73963bfcd480>: Failed to establish a new connection: [Errno 101] Network is unreachable'))")))
+2025-03-13 00:20:04.179323 - (9, 55)
+2025-03-13 00:20:04.179377 - sleep 60s
+2025-03-13 00:21:04.420406 - (8, 55)
+2025-03-13 00:21:04.420459 - sleep 60s
+2025-03-13 23:38:07.641878 - Set cookies
+2025-03-13 23:38:12.685587 - Login
+2025-03-13 23:38:32.705281 - Enter XAUUSD in Dashbord
+2025-03-13 23:38:32.876147 - Die :(

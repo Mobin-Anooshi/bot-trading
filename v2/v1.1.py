@@ -21,12 +21,13 @@ def log_message(message):
 
 
 #Headless
-chrome_options = Options()
-chrome_options.add_argument("--headless")  #  headless
-chrome_options.add_argument("--disable-gpu")  # GPU
-chrome_options.add_argument("--window-size=1920,1080")
-driver = webdriver.Chrome(options=chrome_options)
+# chrome_options = Options()
+# chrome_options.add_argument("--headless")  #  headless
+# chrome_options.add_argument("--disable-gpu")  # GPU
+# chrome_options.add_argument("--window-size=1920,1080")
+# driver = webdriver.Chrome(options=chrome_options)
 
+driver = webdriver.Chrome()
 
 
 COOKIE_FILE = "tradingview_cookies.pkl"
@@ -95,7 +96,7 @@ try:
 
     # Enter Gold Symbol
     log_message('Enter Gold Symbol')
-    gold_select = driver.find_element(By.CSS_SELECTOR, f'div[data-symbol-short="XAUUSD"]')
+    gold_select = driver.find_element(By.CSS_SELECTOR, f'div[data-symbol-short="BTCUSD"]')
     gold_select.click()
     sleep(15)
 
@@ -265,10 +266,11 @@ try:
         """
             Time to Closed Market
         """
-
+        sleep(5)
         open_element = driver.find_element(By.XPATH,
                             '/html/body/div[2]/div/div[5]/div[1]/div[1]/div/div[2]/div[1]/div[2]/div/div[1]/div/div[1]/div[1]/div[3]/div/div[1]')
         open_element.click()
+        sleep(5)
         text_numbers = driver.find_element(By.XPATH,
                                    '/html/body/div[6]/div[2]/span/div[1]/div/div/div[1]/div/p/span[2]').text
         numbers = re.findall(r'\d+',text_numbers)
@@ -290,7 +292,7 @@ try:
         global generate_45_list
         hour,minute = get_time_to_end()
         now = datetime.now().replace(second=0,microsecond=0)
-        start_time = now + timedelta(hours=hour, minutes=minute+1)
+        start_time = now + timedelta(hours=hour, minutes=minute)
 
         return [start_time - timedelta(minutes=45 * i) for i in range(32)]
 
@@ -303,9 +305,11 @@ try:
         """
 
         global generate_45_list
+        sleep(5)
         open_element = driver.find_element(By.XPATH,
                                            '/html/body/div[2]/div/div[5]/div[1]/div[1]/div/div[2]/div[1]/div[2]/div/div[1]/div/div[1]/div[1]/div[3]/div/div[1]')
         open_element.click()
+        sleep(5)
         text_numbers = driver.find_element(By.XPATH,
                                            '/html/body/div[6]/div[2]/span/div[1]/div/div/div[1]/div/p/span[2]').text
         numbers = re.findall(r'\d+', text_numbers)
@@ -322,7 +326,8 @@ try:
         save_cookies() #Save cookie after 1D
         generate_45_list =[]
         send_to_telegram(f'Open')
-        return time_to_next_45_minutes()
+        hour,minute = time_to_next_45_minutes()
+        return hour,minute
 
 
     def time_to_next_45_minutes():
@@ -345,7 +350,8 @@ try:
                 return remaining_time.seconds // 60, remaining_time.seconds % 60
 
         log_message('Can`t give the time')
-        return market_closed()
+        hour,minute =market_closed()
+        return hour,minute
 
 except:
     log_message('Bug in Set Timers')
@@ -379,6 +385,7 @@ try:
         """
             Check Timeline To End 
         """
+
         mint, sec = time_to_next_45_minutes()
         log_message((mint, sec))
 

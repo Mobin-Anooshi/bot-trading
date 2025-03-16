@@ -1,0 +1,36 @@
+2025-03-16 14:29:53.899770 - Set cookies
+2025-03-16 14:30:13.131476 - Login
+2025-03-16 14:30:33.132099 - Enter Gold Symbol
+2025-03-16 14:30:48.231209 - Click Gold Chart
+2025-03-16 14:30:48.291841 - switching the tab
+2025-03-16 14:30:48.346053 - ('HTTP Error:', ConnectionError(MaxRetryError("HTTPSConnectionPool(host='api.telegram.org', port=443): Max retries exceeded with url: /bot7688739598:AAHhxrbE39yYnfeNoPrKb0gjykiDUjfjZ6Q/sendMessage (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7e60e0535420>: Failed to establish a new connection: [Errno 101] Network is unreachable'))")))
+2025-03-16 14:55:00.155827 - (34, 59)
+2025-03-16 14:55:00.156026 - sleep 20m
+2025-03-16 14:55:24.882101 - (33, 35)
+2025-03-16 14:55:24.882283 - sleep 20m
+2025-03-16 17:34:42.757447 - Error in open chart
+2025-03-16 17:34:42.814444 - ('HTTP Error:', SSLError(MaxRetryError("HTTPSConnectionPool(host='api.telegram.org', port=443): Max retries exceeded with url: /bot7688739598:AAHhxrbE39yYnfeNoPrKb0gjykiDUjfjZ6Q/sendMessage (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1007)')))")))
+2025-03-16 17:35:11.699830 - Set cookies
+2025-03-16 17:35:14.466564 - Login
+2025-03-16 17:35:34.468832 - Enter Gold Symbol
+2025-03-16 17:35:49.568223 - Click Gold Chart
+2025-03-16 17:35:49.617557 - switching the tab
+2025-03-16 17:35:49.646715 - ('HTTP Error:', ConnectionError(MaxRetryError("HTTPSConnectionPool(host='api.telegram.org', port=443): Max retries exceeded with url: /bot7688739598:AAHhxrbE39yYnfeNoPrKb0gjykiDUjfjZ6Q/sendMessage (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x77aab02be1a0>: Failed to establish a new connection: [Errno 101] Network is unreachable'))")))
+2025-03-16 17:47:59.772271 - (41, 0)
+2025-03-16 17:48:01.774265 - (41, 0)
+2025-03-16 17:48:10.728542 - (40, 49)
+2025-03-16 17:48:10.728838 - sleep 20m
+2025-03-16 17:48:16.939364 - (40, 43)
+2025-03-16 17:48:16.939577 - sleep 20m
+2025-03-16 17:49:10.295081 - (39, 49)
+2025-03-16 17:49:10.295436 - sleep 20m
+2025-03-16 17:49:19.979393 - (39, 40)
+2025-03-16 17:49:19.980468 - sleep 20m
+2025-03-16 17:53:51.299798 - (36, 8)
+2025-03-16 17:53:51.299999 - sleep 20m
+2025-03-16 17:54:37.688583 - (35, 22)
+2025-03-16 17:54:37.688811 - sleep 20m
+2025-03-16 17:55:28.669335 - (34, 31)
+2025-03-16 17:55:28.669546 - sleep 20m
+2025-03-16 17:55:49.571707 - (34, 10)
+2025-03-16 17:55:49.572286 - sleep 20m
