@@ -89,7 +89,7 @@ try:
 
     # Enter Gold Symbol
     log_message('Enter Gold Symbol')
-    gold_select = driver.find_element(By.CSS_SELECTOR, f'div[data-symbol-short="BTCUSD"]')
+    gold_select = driver.find_element(By.CSS_SELECTOR, f'div[data-symbol-short="XAUUSD"]')
     gold_select.click()
     sleep(15)
 
@@ -273,7 +273,7 @@ try:
         return hour, minutes
 
 
-    generate_45_list = []
+
 
 
     def generate_45():
@@ -318,7 +318,7 @@ try:
         sleep(timer_sleep)
         driver.refresh()
         save_cookies()  # Save cookie after 1D
-        generate_45_list = []
+        generate_45_list = generate_45()
         send_to_telegram(f'Open')
         hour, minute = time_to_next_45_minutes()
         return hour, minute
@@ -332,11 +332,7 @@ try:
 
         global generate_45_list
 
-        if len(generate_45_list) == 0:
-            times = generate_45()
-            print(times)
-        else:
-            times = generate_45_list
+        times = generate_45_list
         now = datetime.now()
         for time in reversed(times):
             if now < time:
@@ -378,7 +374,7 @@ except:
     log_message('Bug in Save Candles')
 
 
-
+generate_45_list = generate_45()
 try:
     while True:
         """
